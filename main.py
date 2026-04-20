@@ -1,22 +1,57 @@
 from activos import Accion
 from portafolio import Portafolio
 
-# Crear portafolio
-portafolio = Portafolio(10000)
+def menu():
+    print("\n--- Simulador de Portafolio ---")
+    print("1. Comprar acción")
+    print("2. Vender acción")
+    print("3. Ver portafolio")
+    print("4. Ver valor total")
+    print("5. Salir")
 
-# Crear acción
-accion = Accion("AAPL")
 
-# Obtener precio usando el método (mejor práctica)
-precio = accion.get_precio_actual()
+def main():
+    portafolio = Portafolio(10000)
 
-# Comprar
-portafolio.comprar(accion, 5, precio)
+    while True:
+        menu()
+        opcion = input("Seleccione una opción: ")
 
-# Calcular valor total
-valor_total = portafolio.calcular_valor()
+        if opcion == "1":
+            ticker = input("Ingrese el ticker: ")
+            cantidad = int(input("Cantidad: "))
 
-# Mostrar resultados
-print("Capital restante:", round(portafolio.capital, 2))
-print("Posiciones:", portafolio.posiciones)
-print("Valor total del portafolio:", round(valor_total, 2))
+            accion = Accion(ticker)
+            precio = accion.get_precio_actual()
+
+            portafolio.comprar(accion, cantidad, precio)
+            print("Compra realizada")
+
+        elif opcion == "2":
+            ticker = input("Ingrese el ticker: ")
+            cantidad = int(input("Cantidad: "))
+
+            accion = Accion(ticker)
+            precio = accion.get_precio_actual()
+
+            portafolio.vender(accion, cantidad, precio)
+            print("Venta realizada")
+
+        elif opcion == "3":
+            print("Posiciones:", portafolio.posiciones)
+            print("Capital:", round(portafolio.capital, 2))
+
+        elif opcion == "4":
+            valor = portafolio.calcular_valor()
+            print("Valor total:", round(valor, 2))
+
+        elif opcion == "5":
+            print("Saliendo...")
+            break
+
+        else:
+            print("Opción inválida")
+
+
+if __name__ == "__main__":
+    main()
