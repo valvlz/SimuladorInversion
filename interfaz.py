@@ -2,31 +2,60 @@ import streamlit as st
 from activos import Accion
 from portafolio import Portafolio
 
+# Configuración de página
+st.set_page_config(page_title="Simulador de Portafolio", layout="centered")
+
 # Inicializar portafolio
 if "portafolio" not in st.session_state:
     st.session_state.portafolio = Portafolio(10000)
 
 portafolio = st.session_state.portafolio
 
+# Título
 st.title("Simulador de Portafolio")
+st.markdown("Gestiona tus inversiones de forma simple")
 
-# Inputs
-ticker = st.text_input("Ticker")
-cantidad = st.number_input("Cantidad", min_value=1, step=1)
+st.divider()
 
-if st.button("Comprar"):
-    try:
-        accion = Accion(ticker)
-        precio = accion.get_precio_actual()
-        portafolio.comprar(accion, cantidad, precio)
-        st.success(f"Compra realizada: {cantidad} de {ticker}")
-    except:
-        st.error("Error en la compra")
+# Inputs en columnas
+col1, col2 = st.columns(2)
 
-if st.button("Ver portafolio"):
-    st.write("Capital:", round(portafolio.capital, 2))
-    st.write("Posiciones:", portafolio.posiciones)
+with col1:
+    ticker = st.text_input("Ticker", placeholder="Ej: AAPL")
 
-if st.button("Valor total"):
-    valor = portafolio.calcular_valor()
-    st.write("Valor total:", round(valor, 2))
+with col2:
+    cantidad = st.number_input("Cantidad", min_value=1, step=1)
+
+st.divider()
+
+# Botones en columnas
+col3, col4, col5 = st.columns(3)
+
+with col3:
+    if st.button("Comprar"):
+        try:
+            accion = Accion(ticker.upper())
+            precio = accion.get_precio_actual()
+            portafolio.comprar(accion, cantidad, precio)
+            st.success(f"Compra realizada: {cantidad} de {ticker.upper()}")
+        except:
+            st.error("Error en la compra")
+
+with col4:
+    if st.button("Ver portafolio"):
+        st.subheader("Estado del portafolio")
+        st.write("Capital:", round(portafolio.capital, 2))
+        st.write("Posiciones:")
+
+        for t, c in portafolio.posiciones.items():
+            st.write(f"- {t}: {c}")
+
+with col5:
+    if st.button("Valor total"):
+        valor = portafolio.calcular_valor()
+        st.info(f"Valor total: {round(valor, 2)}")
+
+st.divider()
+
+# Footer simple
+st.caption("Proyecto simulador de portafolio de inversión")
