@@ -29,7 +29,7 @@ class Portafolio:
             return
 
         self.capital -= costo
-        self.posiciones[activo] = self.posiciones.get(activo, 0) + cantidad
+        self.posiciones[activo.ticker] = self.posiciones.get(activo.ticker, 0) + cantidad
 
     def vender(self, activo, cantidad, precio):
         """
@@ -39,7 +39,10 @@ class Portafolio:
         :param cantidad: número de unidades
         :param precio: precio por unidad
         """
-        if self.posiciones.get(activo, 0) < cantidad:
+        self.posiciones[activo.ticker] -= cantidad
+
+        if self.posiciones[activo.ticker] == 0:
+            del self.posiciones[activo.ticker]
             print("No tienes suficientes unidades para vender")
             return
 
@@ -55,13 +58,15 @@ class Portafolio:
         """
         Calcula el valor total del portafolio sumando el capital disponible
         y el valor actual de los activos en cartera.
-
-        :return: valor total del portafolio
         """
         total = self.capital
 
-        for activo, cantidad in self.posiciones.items():
-            precio = activo.get_precio_actual()
-            total += precio * cantidad
+        for ticker, cantidad in self.posiciones.items():
+            try:
+                accion = Accion(ticker)
+                precio = accion.get_precio_actual()
+                total += precio * cantidad
+            except:
+                print(f"Error obteniendo precio de {ticker}")
 
         return total
