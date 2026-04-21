@@ -17,7 +17,7 @@ st.markdown("Gestiona tus inversiones de forma simple")
 
 st.divider()
 
-# Inputs en columnas
+# Inputs
 col1, col2 = st.columns(2)
 
 with col1:
@@ -28,7 +28,7 @@ with col2:
 
 st.divider()
 
-# Botones en columnas
+# Botones
 col3, col4, col5 = st.columns(3)
 
 with col3:
@@ -45,8 +45,8 @@ with col4:
     if st.button("Ver portafolio"):
         st.subheader("Estado del portafolio")
         st.write("Capital:", round(portafolio.capital, 2))
-        st.write("Posiciones:")
 
+        st.write("Posiciones:")
         for t, c in portafolio.posiciones.items():
             st.write(f"- {t}: {c}")
 
@@ -57,5 +57,25 @@ with col5:
 
 st.divider()
 
-# Footer simple
+#SIMULACIÓN
+st.subheader("Simulación del portafolio")
+
+if st.button("Simular evolución"):
+    if len(portafolio.posiciones) == 0:
+        st.warning("No hay activos en el portafolio")
+    else:
+        historial = portafolio.simular()
+
+        st.line_chart(historial)
+
+        # Rentabilidad
+        valor_inicial = historial.iloc[0]
+        valor_final = historial.iloc[-1]
+
+        rentabilidad = (valor_final - valor_inicial) / valor_inicial
+
+        st.success(f"Rentabilidad: {round(rentabilidad * 100, 2)}%")
+
+st.divider()
+
 st.caption("Proyecto simulador de portafolio de inversión")

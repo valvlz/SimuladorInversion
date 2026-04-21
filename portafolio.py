@@ -1,3 +1,5 @@
+import pandas as pd
+
 class Portafolio:
     """
     Clase que representa un portafolio de inversión.
@@ -70,3 +72,27 @@ class Portafolio:
                 print(f"Error obteniendo precio de {ticker}")
 
         return total
+    
+    def simular(self, dias=30):
+        """
+        Simula la evolución del portafolio en los últimos N días.
+        """
+        
+        historial = None
+
+        for ticker, cantidad in self.posiciones.items():
+            accion = Accion(ticker)
+            data = accion.data["Close"]
+
+            # multiplicar por cantidad
+            valor = data * cantidad
+
+            if historial is None:
+                historial = valor
+            else:
+                historial = historial.add(valor, fill_value=0)
+
+        # sumar capital constante
+        historial = historial + self.capital
+
+        return historial
