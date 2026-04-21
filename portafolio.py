@@ -1,4 +1,5 @@
 import pandas as pd
+from activos import Accion
 
 class Portafolio:
     """
