@@ -1,29 +1,53 @@
 # Simulador de Portafolio de Inversión
 
 ## Descripción
-Este proyecto consiste en un simulador de inversión desarrollado en Python. 
-Permite gestionar un portafolio compuesto por acciones y activos de renta fija.
+Este proyecto consiste en el desarrollo de un simulador financiero que permite gestionar un portafolio de inversión compuesto por activos de renta variable. El sistema permite realizar operaciones de compra y venta de acciones utilizando datos reales del mercado, así como calcular el valor total del portafolio en tiempo real.
 
-El sistema calcula el valor del portafolio a lo largo del tiempo teniendo en cuenta precios de mercado, dividendos y comisiones.
+Adicionalmente, el simulador incluye una funcionalidad de análisis que permite visualizar la evolución histórica del portafolio y calcular su rentabilidad.
 
 ## Funcionalidades
-- Compra y venta de activos
-- Validación de capital disponible
+- Gestión de portafolio con capital inicial
+- Compra y venta de acciones
+- O btención de precios reales mediante yfinance
 - Cálculo del valor total del portafolio
-- Uso de datos reales de mercado
-- Simulación de activos de renta fija
+- Simulación de la evolución del portafolio en el tiempo
+- Cálculo de rentabilidad
+- Interfaz gráfica desarrollada con Streamlit
 
 ## Estructura
-- main.py: archivo principal
-- activos.py: definición de los activos
-- portafolio.py: manejo del portafolio
-- docs/: contiene el diagrama UML
+- activos.py: Define las clases Activo, Accion y RentaFija
+- portafolio.py: Contiene la lógica del portafolio (compra, venta, cálculo de valor y simulación)
+- interfaz.py: Implementa la interfaz gráfica usando Streamlit
+- requirements.txt: Dependencias necesarias del proyecto
 
 ## UML
-![UML](docs/uml.png)
+![alt text](docs/UML.png)
 
 ## Instalación
+1. Clonar el repositorio:
+
+git clone <https://github.com/valvlz/SimuladorInversion.git>
+cd Simulador_Portafolio
+
+2. Crear entorno virtual:
+
+python -m venv venv
+venv\Scripts\activate
+
+3. Instalar dependencias:
 pip install -r requirements.txt
 
 ## Ejecución
-python main.py
+Para ejecutar la aplicación:
+
+streamlit run interfaz.py
+
+## Uso
+1. Ingresar el ticker de la acción (por ejemplo: AAPL, MSFT)
+2. Ingresar la cantidad
+3. Utilizar los botones disponibles:
+    - Comprar
+    - Ver portafolio
+    - Valor total
+    - Simular evolución
+4. La simulación permite visualizar el comportamiento histórico del portafolio y calcular su rentabilidad.
