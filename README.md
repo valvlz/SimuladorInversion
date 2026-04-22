@@ -27,3 +27,4 @@ pip install -r requirements.txt
 
 ## Ejecución
 python main.py
+python streamlit run interfaz.py
