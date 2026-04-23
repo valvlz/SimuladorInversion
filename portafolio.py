@@ -13,8 +13,10 @@ class Portafolio:
         :param capital_inicial: dinero disponible para invertir
         """
         self.capital = capital_inicial
+        self.capital_inicial = capital_inicial
         self.posiciones = {}
         self.comision = 0.001  # comisión del broker
+        
 
     def comprar(self, activo, cantidad, precio):
         """
@@ -163,3 +165,12 @@ class Portafolio:
 
         for ticker, data in self.posiciones.items():
             print(f"{ticker} -> Cantidad: {data['cantidad']} | Precio Promedio: {data['precio_promedio']:.2f}")
+    
+    def calcular_rentabilidad(self):
+
+        valor_actual = self.calcular_valor()
+        inversion_inicial = self.capital_inicial
+
+        rentabilidad = (valor_actual - inversion_inicial) / inversion_inicial
+
+        return rentabilidad
