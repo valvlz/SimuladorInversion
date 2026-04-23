@@ -121,27 +121,41 @@ class Portafolio:
         """
         Simula la evolución del portafolio en los últimos N días.
         """
-        
-        historial = None
+        import pandas as pd
+
+        series = []
+
+        if not hasattr(self, "_cache"):
+            self._cache = {}
 
         for ticker, data_pos in self.posiciones.items():
-            accion = Accion(ticker)
-            data = accion.data["Close"].squeeze()
+            try:
+                if ticker not in self._cache:
+                    self._cache[ticker] = Accion(ticker)
 
-            # multiplicar por cantidad
-            cantidad = data_pos["cantidad"]
-            
-            valor = data * cantidad
+                accion = self._cache[ticker]
 
-            if historial is None:
-                historial = valor
-            else:
-                historial = historial.add(valor, fill_value=0)
+                data = accion.data["Close"].tail(dias).squeeze()
+                cantidad = data_pos["cantidad"]
 
-        # sumar capital constante
-        historial = historial + self.capital
+                valor = data * cantidad
+                valor.name = ticker
 
-        return historial
+                series.append(valor)
+
+            except Exception as e:
+                print(f"Error con {ticker}: {e}")
+
+        if not series:
+            return None
+
+        df = pd.concat(series, axis=1)
+        df = df.ffill().fillna(0)
+
+        total = df.sum(axis=1)
+        total = total + self.capital
+
+        return total
     
     def resumen(self):
 
