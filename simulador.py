@@ -45,3 +45,7 @@ p.vender(aapl, 1, precio_real * 0.1)
 print("\n--- RENTABILIDAD ---")
 rent = p.calcular_rentabilidad()
 print(f"{rent*100:.2f}%")
+
+print("\n--- DIVIDENDOS ---")
+div = p.calcular_dividendos()
+print(div)

@@ -169,8 +169,27 @@ class Portafolio:
     def calcular_rentabilidad(self):
 
         valor_actual = self.calcular_valor()
+        dividendos = self.calcular_dividendos()
         inversion_inicial = self.capital_inicial
 
-        rentabilidad = (valor_actual - inversion_inicial) / inversion_inicial
+        rentabilidad = (valor_actual + dividendos - inversion_inicial) / inversion_inicial
 
         return rentabilidad
+    
+    def calcular_dividendos(self, dias=30):
+
+        total_dividendos = 0
+
+        for ticker, data in self.posiciones.items():
+            try:
+                accion = Accion(ticker)
+                dividendos = accion.get_dividendos(dias)
+
+                cantidad = data["cantidad"]
+
+                total_dividendos += (dividendos.sum() * cantidad)
+
+            except Exception as e:
+                print(f"Error con dividendos de {ticker}: {e}")
+
+        return total_dividendos

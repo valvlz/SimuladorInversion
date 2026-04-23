@@ -47,6 +47,15 @@ class Accion(Activo):
             "high": float(ultimo["High"].item())
         }
     
+    def get_dividendos(self, dias=30):
+        """
+        Retorna los dividendos en los últimos N días.
+        """
+        ticker = yf.Ticker(self.ticker)
+        dividendos = ticker.dividends.tail(dias)
+
+        return dividendos
+    
     def actualizar_datos(self):
         self.data = yf.download(self.ticker, period="1mo")
 
