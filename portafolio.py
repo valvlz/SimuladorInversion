@@ -105,7 +105,7 @@ class Portafolio:
 
         for ticker, data_pos in self.posiciones.items():
             accion = Accion(ticker)
-            data = accion.data["Close"]
+            data = accion.data["Close"].squeeze()
 
             # multiplicar por cantidad
             cantidad = data_pos["cantidad"]
@@ -127,4 +127,4 @@ class Portafolio:
         print(f"Capital disponible: {self.capital}")
 
         for ticker, data in self.posiciones.items():
-            print(f"{ticker} -> Cantidad: {data['cantidad']} | Precio Promedio: {data['precio_promedio']}")
+            print(f"{ticker} -> Cantidad: {data['cantidad']} | Precio Promedio: {data['precio_promedio']:.2f}")

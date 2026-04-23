@@ -27,7 +27,7 @@ class Accion(Activo):
         """
         Retorna el último precio de cierre de la acción.
         """
-        return float(self.data["Close"].iloc[-1])
+        return float(self.data["Close"].iloc[-1].item())
 
     def __str__(self):
         return self.ticker
