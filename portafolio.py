@@ -32,7 +32,26 @@ class Portafolio:
             return
 
         self.capital -= costo
-        self.posiciones[activo.ticker] = self.posiciones.get(activo.ticker, 0) + cantidad
+        ticker = activo.ticker
+
+        if ticker in self.posiciones:
+            pos = self.posiciones[ticker]
+
+            nueva_cantidad = pos["cantidad"] + cantidad
+            nuevo_precio = (
+                (pos["cantidad"] * pos["precio_promedio"] + cantidad * precio)
+                / nueva_cantidad
+            )
+
+            self.posiciones[ticker] = {
+                "cantidad": nueva_cantidad,
+                "precio_promedio": nuevo_precio
+            }
+        else:
+            self.posiciones[ticker] = {
+                "cantidad": cantidad,
+                "precio_promedio": precio
+            }
 
     def vender(self, activo, cantidad, precio):
         """
@@ -42,20 +61,24 @@ class Portafolio:
         :param cantidad: número de unidades
         :param precio: precio por unidad
         """
-        self.posiciones[activo.ticker] -= cantidad
+        ticker = activo.ticker
+    
+        if ticker not in self.posiciones:
+            print("No tienes este activo")
+            return
 
-        if self.posiciones[activo.ticker] == 0:
-            del self.posiciones[activo.ticker]
+        if self.posiciones[ticker]["cantidad"] < cantidad:
             print("No tienes suficientes unidades para vender")
             return
 
         ingreso = cantidad * precio * (1 - self.comision)
         self.capital += ingreso
-        self.posiciones[activo] -= cantidad
+        
+        self.posiciones[ticker]["cantidad"] -= cantidad
 
         # Elimina el activo si ya no quedan unidades
-        if self.posiciones[activo] == 0:
-            del self.posiciones[activo]
+        if self.posiciones[ticker]["cantidad"] == 0:
+            del self.posiciones[ticker]
 
     def calcular_valor(self):
         """
