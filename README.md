@@ -23,7 +23,7 @@ Adicionalmente, el simulador incluye una funcionalidad de análisis que permite 
 - requirements.txt: Dependencias necesarias del proyecto
 
 ## UML
-![alt text](docs/UML.png)
+![alt text](UML_FIN.drawio-1.png)
 
 ## Instalación
 1. Clonar el repositorio:
