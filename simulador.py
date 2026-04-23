@@ -29,3 +29,15 @@ print(p.calcular_valor())
 print("\n--- SIMULACIÓN ---")
 hist = p.simular()
 print(hist.tail())
+
+
+precio_real = aapl.get_precio_actual()
+
+print("\n--- COMPRA FUERA DE RANGO (ALTO) ---")
+p.comprar(aapl, 1, precio_real * 10)
+
+print("\n--- COMPRA FUERA DE RANGO (BAJO) ---")
+p.comprar(aapl, 1, precio_real * 0.1)
+
+print("\n--- VENTA FUERA DE RANGO ---")
+p.vender(aapl, 1, precio_real * 0.1)

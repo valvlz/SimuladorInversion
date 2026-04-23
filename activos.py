@@ -42,9 +42,9 @@ class Accion(Activo):
         ultimo = self.data.iloc[-1]
 
         return {
-            "close": float(ultimo["Close"]),
-            "low": float(ultimo["Low"]),
-            "high": float(ultimo["High"])
+            "close": float(ultimo["Close"].item()),
+            "low": float(ultimo["Low"].item()),
+            "high": float(ultimo["High"].item())
         }
     
     def actualizar_datos(self):

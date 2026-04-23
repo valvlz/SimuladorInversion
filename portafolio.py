@@ -24,6 +24,16 @@ class Portafolio:
         :param cantidad: número de unidades
         :param precio: precio por unidad
         """
+        precios = activo.get_precio_dia()
+
+        if precio > precios["high"]:
+            print("No puedes comprar por encima del precio máximo del día")
+            return
+
+        if precio < precios["low"]:
+            print("No puedes comprar por debajo del precio mínimo del día")
+            return
+
         costo = cantidad * precio * (1 + self.comision)
 
         if costo > self.capital:
@@ -60,6 +70,17 @@ class Portafolio:
         :param cantidad: número de unidades
         :param precio: precio por unidad
         """
+
+        precios = activo.get_precio_dia()
+
+        if precio < precios["low"]:
+            print("No puedes vender por debajo del mínimo del día")
+            return
+
+        if precio > precios["high"]:
+            print("No puedes vender por encima del máximo del día")
+            return
+
         ticker = activo.ticker
     
         if ticker not in self.posiciones:
