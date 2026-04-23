@@ -33,7 +33,7 @@ class Portafolio:
         high = precios["high"]
         low = precios["low"]
 
-        # 🧠 VALIDACIÓN PRO TIPO BROKER
+        # vALIDACIÓN 
         if precio > high:
             return f"Orden rechazada: precio ({precio:.2f}) supera el HIGH del día ({high:.2f})"
 

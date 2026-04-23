@@ -24,30 +24,47 @@ st.divider()
 
 st.subheader("Renta Fija (CDT)")
 
-if st.button("Ver CDTs"):
+capital_cdt = st.number_input("Capital CDT", min_value=100)
+tasa = st.number_input("Tasa anual (%)", min_value=0.0) / 100
+dias = st.number_input("Plazo en días", min_value=1)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    crear = st.button("Crear CDT")
+
+with col2:
+    ver = st.button("Ver CDTs")
+
+if crear:
+    mensaje = portafolio.agregar_cdt(capital_cdt, tasa, dias)
+    st.success(mensaje)
+
+if ver:
     st.subheader("Mis CDTs")
 
     if len(portafolio.cdts) == 0:
         st.info("No hay CDTs activos")
     else:
         for i, cdt in enumerate(portafolio.cdts):
+
             valor = cdt.actualizar()
 
-            st.write({
-                "CDT": i + 1,
-                "Capital": cdt.capital,
-                "Valor actual": round(valor, 2),
-                "Interés acumulado": round(cdt.interes_acumulado, 2),
-                "Días": cdt.dias_transcurridos
-            })
+            st.markdown(f"### CDT #{i + 1}")
 
-capital_cdt = st.number_input("Capital CDT", min_value=100)
-tasa = st.number_input("Tasa anual (%)", min_value=0.0) / 100
-dias = st.number_input("Plazo en días", min_value=1)
+            col1, col2, col3 = st.columns(3)
 
-if st.button("Crear CDT"):
-    mensaje = portafolio.agregar_cdt(capital_cdt, tasa, dias)
-    st.success(mensaje)
+            with col1:
+                st.metric("Capital", f"${cdt.capital:,.2f}")
+
+            with col2:
+                st.metric("Valor actual", f"${valor:,.2f}")
+
+            with col3:
+                st.metric("Días transcurridos", cdt.dias_transcurridos)
+
+            st.caption(f"Interés acumulado: ${cdt.interes_acumulado:,.2f}")
+
 
 st.subheader("Renta variable (Acciones y ETFs)")
 if len(portafolio.posiciones) == 0:
@@ -63,28 +80,22 @@ with col2:
 
 
 # Botones
-col3, col4, col5 = st.columns(3)
+col3, col4 = st.columns(2)
 
 with col3:
     if st.button("Comprar"):
         if not ticker:
             st.warning("Ingresa un ticker")
         else:
-            try:
-                accion = Accion(ticker.upper())
-                precio = accion.get_precio_actual()
+            accion = Accion(ticker.upper())
+            precio = accion.get_precio_actual()
 
-                resultado = portafolio.comprar(accion, cantidad, precio)
+            resultado = portafolio.comprar(accion, cantidad, precio)
 
-                if resultado is None:
-                    st.error("Error inesperado en la compra")
-                elif "realizada" in resultado:
-                    st.success(f"{resultado}: {cantidad} de {ticker.upper()}")
-                else:
-                    st.error(f"{resultado}")
-
-            except Exception as e:
-                st.error(f"Error en la compra: {str(e)}")
+            if "realizada" in resultado:
+                st.success(resultado)
+            else:
+                st.error(resultado)
 
 with col4:
     if st.button("Ver Wallet"):
@@ -97,10 +108,25 @@ with col4:
             for t, data in portafolio.posiciones.items():
                 st.write(f"{t} → Cantidad: {data['cantidad']} | Precio Prom: {data['precio_promedio']:.2f}")
 
-#with col5:
-#    if st.button("Valor total"):
- #       valor = portafolio.calcular_valor()
-  #      st.info(f"Valor total: {round(valor, 2)}")
+#ith col5:
+with st.expander("Vender activos"):
+    ticker_sell = st.text_input("Ticker a vender", placeholder="Ej: AAPL", key="sell_ticker")
+    cantidad_sell = st.number_input("Cantidad a vender", min_value=1, step=1, key="sell_qty")
+
+    if st.button("Vender"):
+        if not ticker_sell:
+            st.warning("Ingresa un ticker")
+        else:
+            try:
+                accion = Accion(ticker_sell.upper())
+                precio = accion.get_precio_actual()
+
+                portafolio.vender(accion, cantidad_sell, precio)
+
+                st.success(f"Venta realizada: {cantidad_sell} de {ticker_sell.upper()}")
+
+            except:
+                st.error("Error en la venta")
 
 st.divider()
 
@@ -135,5 +161,9 @@ if st.button("Simular evolución"):
             # ✔ Dividendos
             dividendos = portafolio.calcular_dividendos()
             st.info(f"Dividendos acumulados: ${dividendos:.2f}")
+
+#st.write("Posiciones actuales:")
+#for t, data in portafolio.posiciones.items():
+#    st.write(f"{t} → {data['cantidad']}")
 
 st.caption("Proyecto simulador de portafolio de inversión")
