@@ -57,7 +57,7 @@ class Accion(Activo):
         return dividendos
     
     def actualizar_datos(self):
-        self.data = yf.download(self.ticker, period="1mo")
+        self.data = yf.download(self.ticker, period="1y")
 
 
 class RentaFija(Activo):

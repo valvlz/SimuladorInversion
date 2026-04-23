@@ -12,10 +12,12 @@ Adicionalmente, el simulador incluye una funcionalidad de análisis que permite 
 - Cálculo del valor total del portafolio
 - Simulación de la evolución del portafolio en el tiempo
 - Cálculo de rentabilidad
+- Descarga de portafolio en .pdf
 - Interfaz gráfica desarrollada con Streamlit
 
 ## Estructura
-- activos.py: Define las clases Activo, Accion y RentaFija
+- activos.py: Define las clases Activo y Accion 
+- cdt.py Define la clase para rentafija
 - portafolio.py: Contiene la lógica del portafolio (compra, venta, cálculo de valor y simulación)
 - interfaz.py: Implementa la interfaz gráfica usando Streamlit
 - requirements.txt: Dependencias necesarias del proyecto

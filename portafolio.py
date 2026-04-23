@@ -1,5 +1,9 @@
 from activos import Accion
 from cdt import CDT
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from datetime import datetime
 
 class Portafolio:
     """
@@ -226,3 +230,99 @@ class Portafolio:
             total += cdt.actualizar()
 
         return total
+
+    def generar_reporte_pdf(self, filename="reporte_portafolio.pdf"):
+
+        doc = SimpleDocTemplate(filename)
+        styles = getSampleStyleSheet()
+        story = []
+
+        # =========================
+        # TÍTULO
+        # =========================
+        title = Paragraph("REPORTE FINANCIERO DEL PORTAFOLIO", styles["Title"])
+        story.append(title)
+        story.append(Spacer(1, 12))
+
+        fecha = Paragraph(f"Fecha de generación: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", styles["Normal"])
+        story.append(fecha)
+        story.append(Spacer(1, 20))
+
+        # =========================
+        # RESUMEN GENERAL
+        # =========================
+        valor_total = self.calcular_valor()
+        rentabilidad = self.calcular_rentabilidad()
+        cdts = self.valor_total_cdts()
+
+        data_resumen = [
+            ["Capital inicial", f"${self.capital_inicial:,.2f}"],
+            ["Capital actual", f"${self.capital:,.2f}"],
+            ["Valor CDTs", f"${cdts:,.2f}"],
+            ["Valor total", f"${valor_total:,.2f}"],
+            ["Rentabilidad", f"{rentabilidad*100:.2f}%"]
+        ]
+
+        tabla_resumen = Table(data_resumen)
+        tabla_resumen.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,0), colors.grey),
+            ("TEXTCOLOR", (0,0), (-1,0), colors.whitesmoke),
+            ("GRID", (0,0), (-1,-1), 0.5, colors.black),
+            ("PADDING", (0,0), (-1,-1), 6),
+        ]))
+
+        story.append(Paragraph("RESUMEN FINANCIERO", styles["Heading2"]))
+        story.append(tabla_resumen)
+        story.append(Spacer(1, 20))
+
+        # =========================
+        # ACCIONES
+        # =========================
+        data_acciones = [["Ticker", "Cantidad", "Precio Promedio"]]
+
+        for t, data in self.posiciones.items():
+            data_acciones.append([
+                t,
+                str(data["cantidad"]),
+                f"{data['precio_promedio']:.2f}"
+            ])
+
+        tabla_acciones = Table(data_acciones)
+        tabla_acciones.setStyle(TableStyle([
+            ("GRID", (0,0), (-1,-1), 0.5, colors.black),
+            ("BACKGROUND", (0,0), (-1,0), colors.lightblue),
+        ]))
+
+        story.append(Paragraph("ACCIONES EN PORTAFOLIO", styles["Heading2"]))
+        story.append(tabla_acciones)
+        story.append(Spacer(1, 20))
+
+        # =========================
+        # CDTs
+        # =========================
+        data_cdts = [["Capital", "Valor actual", "Interés"]]
+
+        for cdt in self.cdts:
+            valor = cdt.actualizar()
+
+            data_cdts.append([
+                f"${cdt.capital:,.2f}",
+                f"${valor:,.2f}",
+                f"${cdt.interes_acumulado:,.2f}"
+            ])
+
+        tabla_cdts = Table(data_cdts)
+        tabla_cdts.setStyle(TableStyle([
+            ("GRID", (0,0), (-1,-1), 0.5, colors.black),
+            ("BACKGROUND", (0,0), (-1,0), colors.lightgreen),
+        ]))
+
+        story.append(Paragraph("CDTs", styles["Heading2"]))
+        story.append(tabla_cdts)
+
+        # =========================
+        # GENERAR PDF
+        # =========================
+        doc.build(story)
+
+        return filename
