@@ -74,7 +74,7 @@ if st.button("Simular evolución"):
 
         rentabilidad = (valor_final - valor_inicial) / valor_inicial
 
-        st.success(f"Rentabilidad: {round(rentabilidad * 100, 2)}%")
+        st.success(f"Rentabilidad: {rentabilidad.iloc[0] * 100:.2f}%")
 
 st.divider()
 

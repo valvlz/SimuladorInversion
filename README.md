@@ -8,7 +8,7 @@ Adicionalmente, el simulador incluye una funcionalidad de análisis que permite 
 ## Funcionalidades
 - Gestión de portafolio con capital inicial
 - Compra y venta de acciones
-- O btención de precios reales mediante yfinance
+- Obtención de precios reales mediante yfinance
 - Cálculo del valor total del portafolio
 - Simulación de la evolución del portafolio en el tiempo
 - Cálculo de rentabilidad
