@@ -1,4 +1,3 @@
-import pandas as pd
 from activos import Accion
 
 class Portafolio:
@@ -87,11 +86,11 @@ class Portafolio:
         """
         total = self.capital
 
-        for ticker, cantidad in self.posiciones.items():
+        for ticker, data in self.posiciones.items():
             try:
                 accion = Accion(ticker)
                 precio = accion.get_precio_actual()
-                total += precio * cantidad
+                total += precio * data["cantidad"]
             except:
                 print(f"Error obteniendo precio de {ticker}")
 
@@ -104,11 +103,13 @@ class Portafolio:
         
         historial = None
 
-        for ticker, cantidad in self.posiciones.items():
+        for ticker, data_pos in self.posiciones.items():
             accion = Accion(ticker)
             data = accion.data["Close"]
 
             # multiplicar por cantidad
+            cantidad = data_pos["cantidad"]
+            
             valor = data * cantidad
 
             if historial is None:
@@ -120,3 +121,10 @@ class Portafolio:
         historial = historial + self.capital
 
         return historial
+    
+    def resumen(self):
+
+        print(f"Capital disponible: {self.capital}")
+
+        for ticker, data in self.posiciones.items():
+            print(f"{ticker} -> Cantidad: {data['cantidad']} | Precio Promedio: {data['precio_promedio']}")
