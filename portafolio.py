@@ -1,4 +1,5 @@
 from activos import Accion
+from cdt import CDT
 
 class Portafolio:
     """
@@ -14,6 +15,7 @@ class Portafolio:
         """
         self.capital = capital_inicial
         self.capital_inicial = capital_inicial
+        self.cdts = []
         self.posiciones = {}
         self.comision = 0.001  # comisión del broker
         
@@ -28,20 +30,21 @@ class Portafolio:
         """
         precios = activo.get_precio_dia()
 
-        if precio > precios["high"]:
-            print("No puedes comprar por encima del precio máximo del día")
-            return
+        high = precios["high"]
+        low = precios["low"]
 
-        if precio < precios["low"]:
-            print("No puedes comprar por debajo del precio mínimo del día")
-            return
+        # 🧠 VALIDACIÓN PRO TIPO BROKER
+        if precio > high:
+            return f"Orden rechazada: precio ({precio:.2f}) supera el HIGH del día ({high:.2f})"
+
+        if precio < low:
+            return f"Orden rechazada: precio ({precio:.2f}) está por debajo del LOW del día ({low:.2f})"
 
         costo = cantidad * precio * (1 + self.comision)
 
         if costo > self.capital:
-            print("No hay suficiente capital para la compra")
-            return
-
+            return "Orden rechazada: capital insuficiente"
+        
         self.capital -= costo
         ticker = activo.ticker
 
@@ -63,6 +66,7 @@ class Portafolio:
                 "cantidad": cantidad,
                 "precio_promedio": precio
             }
+        return "Compra realizada"
 
     def vender(self, activo, cantidad, precio):
         """
@@ -76,22 +80,18 @@ class Portafolio:
         precios = activo.get_precio_dia()
 
         if precio < precios["low"]:
-            print("No puedes vender por debajo del mínimo del día")
-            return
+            return "No puedes vender por debajo del mínimo del día"
 
         if precio > precios["high"]:
-            print("No puedes vender por encima del máximo del día")
-            return
+            return "No puedes vender por encima del máximo del día"
 
         ticker = activo.ticker
     
         if ticker not in self.posiciones:
-            print("No tienes este activo")
-            return
+            return "No tienes este activo"
 
         if self.posiciones[ticker]["cantidad"] < cantidad:
-            print("No tienes suficientes unidades para vender")
-            return
+            return "No tienes suficientes unidades para vender"
 
         ingreso = cantidad * precio * (1 - self.comision)
         self.capital += ingreso
@@ -101,6 +101,17 @@ class Portafolio:
         # Elimina el activo si ya no quedan unidades
         if self.posiciones[ticker]["cantidad"] == 0:
             del self.posiciones[ticker]
+    
+    def agregar_cdt(self, capital, tasa_anual, dias_plazo):
+        if capital > self.capital:
+            return "No hay suficiente capital"
+
+        self.capital -= capital
+
+        nuevo_cdt = CDT(capital, tasa_anual, dias_plazo)
+        self.cdts.append(nuevo_cdt)
+
+        return "CDT creado exitosamente"
 
     def calcular_valor(self):
         """
@@ -116,6 +127,8 @@ class Portafolio:
                 total += precio * data["cantidad"]
             except:
                 print(f"Error obteniendo precio de {ticker}")
+        
+        total += self.valor_total_cdts()
 
         return total
     
@@ -124,6 +137,10 @@ class Portafolio:
         Simula la evolución del portafolio en los últimos N días.
         """
         import pandas as pd
+        from datetime import datetime, timedelta
+
+        fecha_base = datetime.today()
+        fecha_simulada = fecha_base + timedelta(days=dias)
 
         series = []
 
@@ -155,7 +172,13 @@ class Portafolio:
         df = df.ffill().fillna(0)
 
         total = df.sum(axis=1)
-        total = total + self.capital
+
+        total_cdts = 0
+
+        for cdt in self.cdts:
+            total_cdts += cdt.actualizar(fecha_simulada)
+
+        total = total + self.capital + total_cdts
 
         return total
     
@@ -193,3 +216,13 @@ class Portafolio:
                 print(f"Error con dividendos de {ticker}: {e}")
 
         return total_dividendos
+    
+
+    
+    def valor_total_cdts(self):
+        total = 0
+
+        for cdt in self.cdts:
+            total += cdt.actualizar()
+
+        return total

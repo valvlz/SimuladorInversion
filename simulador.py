@@ -49,3 +49,38 @@ print(f"{rent*100:.2f}%")
 print("\n--- DIVIDENDOS ---")
 div = p.calcular_dividendos()
 print(div)
+
+print("\n--- CREAR CDT ---")
+print(p.agregar_cdt(2000, 0.10, 30))
+
+print("\n--- CDTs EN PORTAFOLIO ---")
+for cdt in p.cdts:
+    print(f"Capital: {cdt.capital} | Valor actual: {cdt.actualizar()}")
+
+print("\n--- VALOR TOTAL CON CDT ---")
+print(p.calcular_valor())
+
+print("\n--- CAPITAL RESTANTE ---")
+print(p.capital)
+
+print("\n--- PORTAFOLIO FINAL COMPLETO ---")
+p.resumen()
+print("Valor total:", p.calcular_valor())
+print("CDTs:", len(p.cdts))
+
+print("\n--- CDT TEST ---")
+
+p.agregar_cdt(2000, 0.10, 30)
+
+from datetime import datetime, timedelta
+
+for cdt in p.cdts:
+    print("Día 0:", cdt.actualizar())
+
+    print("Día 10:", cdt.actualizar(
+        cdt.fecha_inicio + timedelta(days=10)
+    ))
+
+    print("Día 30:", cdt.actualizar(
+        cdt.fecha_inicio + timedelta(days=30)
+    ))
